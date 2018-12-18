@@ -67,6 +67,18 @@ def compute_precision_recall(scores, labels, num_gt):
   recall = cum_true_positives.astype(float) / num_gt
   return precision, recall
 
+  sorted_indices = np.argsort(scores)
+  sorted_indices = sorted_indices[::-1]
+  labels = labels.astype(int)
+  true_positive_labels = labels[sorted_indices]
+  false_positive_labels = 1 - true_positive_labels
+  cum_true_positives = np.cumsum(true_positive_labels)
+  cum_false_positives = np.cumsum(false_positive_labels)
+  precision = cum_true_positives.astype(float) / (
+      cum_true_positives + cum_false_positives)
+  recall = cum_true_positives.astype(float) / num_gt
+  return precision, recall
+
 
 def compute_average_precision(precision, recall):
   """Compute Average Precision according to the definition in VOCdevkit.
