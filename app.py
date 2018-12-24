@@ -36,7 +36,7 @@ def load_image_into_numpy_array(image):
 
 
 app = Flask(__name__)
-
+app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads/'
 app.config['ALLOWED_EXTENSIONS'] = set(['png', 'jpg', 'jpeg'])
 
