@@ -127,7 +127,39 @@ def gather(boxlist, indices, fields=None):
     subboxlist.add_field(field, extra_field_data[indices, ...])
   return subboxlist
 
+def gather(boxlist, indices, fields=None):
+  """Gather boxes from BoxList according to indices and return new BoxList.
 
+  By default, Gather returns boxes corresponding to the input index list, as
+  well as all additional fields stored in the boxlist (indexing into the
+  first dimension).  However one can optionally only gather from a
+  subset of fields.
+
+  Args:
+    boxlist: BoxList holding N boxes
+    indices: a 1-d numpy array of type int_
+    fields: (optional) list of fields to also gather from.  If None (default),
+        all fields are gathered from.  Pass an empty fields list to only gather
+        the box coordinates.
+
+  Returns:
+    subboxlist: a BoxList corresponding to the subset of the input BoxList
+        specified by indices
+
+  Raises:
+    ValueError: if specified field is not contained in boxlist or if the
+        indices are not of type int_
+  """
+  if indices.size:
+    if np.amax(indices) >= boxlist.num_boxes() or np.amin(indices) < 0:
+      raise ValueError('indices are out of valid range.')
+  subboxlist = np_box_list.BoxList(boxlist.get()[indices, :])
+  if fields is None:
+    fields = boxlist.get_extra_fields()
+  for field in fields:
+    extra_field_data = boxlist.get_field(field)
+    subboxlist.add_field(field, extra_field_data[indices, ...])
+  return subboxlist
 def sort_by_field(boxlist, field, order=SortOrder.DESCEND):
   """Sort boxes and associated fields according to a scalar field.
 
