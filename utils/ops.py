@@ -247,6 +247,36 @@ def dense_to_sparse_boxes(dense_locations, dense_num_boxes, num_classes):
   return box_locations, box_classes
 
 
+def dense_to_sparse_boxes(dense_locations, dense_num_boxes, num_classes):
+  """Converts bounding boxes from dense to sparse form.
+
+  Args:
+    dense_locations:  a [max_num_boxes, 4] tensor in which only the first k rows
+      are valid bounding box location coordinates, where k is the sum of
+      elements in dense_num_boxes.
+    dense_num_boxes: a [max_num_classes] tensor indicating the counts of
+       various bounding box classes e.g. [1, 0, 0, 2] means that the first
+       bounding box is of class 0 and the second and third bounding boxes are
+       of class 3. The sum of elements in this tensor is the number of valid
+       bounding boxes.
+    num_classes: number of classes
+
+  Returns:
+    box_locations: a [num_boxes, 4] tensor containing only valid bounding
+       boxes (i.e. the first num_boxes rows of dense_locations)
+    box_classes: a [num_boxes] tensor containing the classes of each bounding
+       box (e.g. dense_num_boxes = [1, 0, 0, 2] => box_classes = [0, 3, 3]
+  """
+
+  num_valid_boxes = tf.reduce_sum(dense_num_boxes)
+  box_locations = tf.slice(dense_locations,
+                           tf.constant([0, 0]), tf.stack([num_valid_boxes, 4]))
+  tiled_classes = [tf.tile([i], tf.expand_dims(dense_num_boxes[i], 0))
+                   for i in range(num_classes)]
+  box_classes = tf.concat(tiled_classes, 0)
+  box_locations.set_shape([None, 4])
+  return box_locations, box_classes
+
 def indices_to_dense_vector(indices,
                             size,
                             indices_value=1.,
