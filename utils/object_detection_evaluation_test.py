@@ -121,5 +121,34 @@ class ObjectDetectionEvaluationTest(tf.test.TestCase):
     self.assertAlmostEqual(expected_mean_corloc, mean_corloc)
 
 
+
+    def test_evaluate(self):
+    (average_precision_per_class, mean_ap, precisions_per_class,
+     recalls_per_class, corloc_per_class,
+     mean_corloc) = self.od_eval.evaluate()
+    expected_precisions_per_class = [np.array([0, 0.5], dtype=float),
+                                     np.array([], dtype=float),
+                                     np.array([0], dtype=float)]
+    expected_recalls_per_class = [
+        np.array([0, 1. / 3.], dtype=float), np.array([], dtype=float),
+        np.array([0], dtype=float)
+    ]
+    expected_average_precision_per_class = np.array([1. / 6., 0, 0],
+                                                    dtype=float)
+    expected_corloc_per_class = np.array([0, np.divide(0, 0), 0], dtype=float)
+    expected_mean_ap = 1. / 18
+    expected_mean_corloc = 0.0
+    for i in range(self.od_eval.num_class):
+      self.assertTrue(np.allclose(expected_precisions_per_class[i],
+                                  precisions_per_class[i]))
+      self.assertTrue(np.allclose(expected_recalls_per_class[i],
+                                  recalls_per_class[i]))
+    self.assertTrue(np.allclose(expected_average_precision_per_class,
+                                average_precision_per_class))
+    self.assertTrue(np.allclose(expected_corloc_per_class, corloc_per_class))
+    self.assertAlmostEqual(expected_mean_ap, mean_ap)
+    self.assertAlmostEqual(expected_mean_corloc, mean_corloc)
+
+
 if __name__ == "__main__":
   tf.test.main()
