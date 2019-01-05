@@ -137,3 +137,37 @@ def create_random_boxes(num_boxes, max_height, max_width):
   boxes[:, 3] = np.maximum(x_1, x_2)
 
   return boxes.astype(np.float32)
+
+
+
+
+
+
+
+
+
+def create_random_boxes(num_boxes, max_height, max_width):
+  """Creates random bounding boxes of specific maximum height and width.
+
+  Args:
+    num_boxes: number of boxes.
+    max_height: maximum height of boxes.
+    max_width: maximum width of boxes.
+
+  Returns:
+    boxes: numpy array of shape [num_boxes, 4]. Each row is in form
+        [y_min, x_min, y_max, x_max].
+  """
+
+  y_1 = np.random.uniform(size=(1, num_boxes)) * max_height
+  y_2 = np.random.uniform(size=(1, num_boxes)) * max_height
+  x_1 = np.random.uniform(size=(1, num_boxes)) * max_width
+  x_2 = np.random.uniform(size=(1, num_boxes)) * max_width
+
+  boxes = np.zeros(shape=(num_boxes, 4))
+  boxes[:, 0] = np.minimum(y_1, y_2)
+  boxes[:, 1] = np.minimum(x_1, x_2)
+  boxes[:, 2] = np.maximum(y_1, y_2)
+  boxes[:, 3] = np.maximum(x_1, x_2)
+
+  return boxes.astype(np.float32)
