@@ -68,6 +68,22 @@ class TestUtilsTest(tf.test.TestCase):
     self.assertTrue(boxes[:, 2].max() <= max_height)
     self.assertTrue(boxes[:, 3].max() <= max_width)
 
+def test_random_boxes(self):
+    """Tests if valid random boxes are created."""
+    num_boxes = 1000
+    max_height = 3
+    max_width = 5
+    boxes = test_utils.create_random_boxes(num_boxes,
+                                           max_height,
+                                           max_width)
 
+    true_column = np.ones(shape=(num_boxes)) == 1
+    self.assertAllEqual(boxes[:, 0] < boxes[:, 2], true_column)
+    self.assertAllEqual(boxes[:, 1] < boxes[:, 3], true_column)
+
+    self.assertTrue(boxes[:, 0].min() >= 0)
+    self.assertTrue(boxes[:, 1].min() >= 0)
+    self.assertTrue(boxes[:, 2].max() <= max_height)
+    self.assertTrue(boxes[:, 3].max() <= max_width)
 if __name__ == '__main__':
   tf.test.main()
